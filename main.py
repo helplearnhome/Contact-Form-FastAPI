@@ -43,6 +43,10 @@ async def read_root():
 async def get_contact_form_details():
     return next(db_contact_form.fetch())
 
+@app.get("/contact-form/{email_id}")
+async def get_contact_form_details_by_email_id(email_id: str):
+    return next(db_contact_form.fetch({"email_id":email_id}))
+
 @app.post("/contact-form/")
 async def post_contact_form_details(contact_form_object: ContactForm):
     first_name = contact_form_object.first_name

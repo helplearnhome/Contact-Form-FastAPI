@@ -1,6 +1,5 @@
-# import smtplib
-# from email.message import EmailMessage
-
+import smtplib
+from email.message import EmailMessage
 import os
 import main
 
