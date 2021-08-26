@@ -1,5 +1,5 @@
-# import smtplib
-# from email.message import EmailMessage
+import smtplib
+from email.message import EmailMessage
 import os
 import main
 
@@ -50,13 +50,13 @@ class SendEmail:
                 self.receiver_email=db_sender_receiver_details_last_object['receiver_email']
         
 
-        # self.msg = EmailMessage()
-        # self.msg["From"] = self.sender_email
-        # self.msg["To"] = self.receiver_email
-        # self.msg['Subject'] = self.subject
-        # self.msg.set_content(self.message_body)
+        self.msg = EmailMessage()
+        self.msg["From"] = self.sender_email
+        self.msg["To"] = self.receiver_email
+        self.msg['Subject'] = self.subject
+        self.msg.set_content(self.message_body)
 
-        # server = smtplib.SMTP_SSL(self.SMTP_GMAIL_SERVER,self.SMTP_GMAIL_PORT)
-        # server.login(self.sender_email,self.sender_password)
-        # server.send_message(self.msg)
-        # server.quit
+        server = smtplib.SMTP_SSL(self.SMTP_GMAIL_SERVER,self.SMTP_GMAIL_PORT)
+        server.login(self.sender_email,self.sender_password)
+        server.send_message(self.msg)
+        server.quit
