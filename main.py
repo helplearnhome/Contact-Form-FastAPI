@@ -47,16 +47,25 @@ class SenderReceiverDetailswithID(BaseModel):
 async def read_root():
     return {"greetings": "Welcome to the Contact Form API!"}
 
-@app.get("/contact-form")
+@app.get("/contact-form",tags=["Contact Form"])
 async def get_contact_form_details():
+    '''
+    Get all the messages from contact form
+    '''
     return next(db_contact_form.fetch())
 
-@app.get("/contact-form/{contact_email}")
+@app.get("/contact-form/{contact_email}",tags=["Contact Form"])
 async def get_contact_form_details_by_contact_email_id(contact_email: str):
+    '''
+    Get messages from contact form by email id.
+    '''
     return next(db_contact_form.fetch({"contact_email":contact_email}))
 
-@app.post("/contact-form/")
+@app.post("/contact-form/",tags=["Contact Form"])
 async def post_contact_form_details(contact_form_object: ContactForm):
+    '''
+    A post request to send message.
+    '''
     first_name = contact_form_object.first_name
     last_name = contact_form_object.last_name
     contact_email = contact_form_object.contact_email
@@ -73,8 +82,12 @@ async def post_contact_form_details(contact_form_object: ContactForm):
     return next(db_contact_form.fetch())[-1]
 
 
-@app.delete("/contact-form-details/")
+@app.delete("/contact-form-details/",tags=["Contact Form"])
 async def delete_sender_receiver_details(contact_email: Optional[str]=None):
+    '''
+    Delete messages by email id.
+    If you don't speicify email id. All the messages will be deleted.
+    '''
     print(contact_email)
     json_item = next(db_contact_form.fetch())
     if not json_item:
@@ -92,27 +105,33 @@ async def delete_sender_receiver_details(contact_email: Optional[str]=None):
 
 
 
-
-@app.get("/sender-receiver-details")
+@app.get("/sender-receiver-details",tags=["Sender and Receiver Details"])
 async def get_sender_receiver_details():
+    '''
+    Get all sender emails and receiver emails history.
+    If 0 details exist. Then default environment variable's sender mail and receiver
+    mail values are chosen.
+    '''
     return next(db_sender_receiver_details.fetch())
 
-@app.post("/sender-receiver-details/")
+@app.post("/sender-receiver-details/",tags=["Sender and Receiver Details"])
 async def post_sender_receiver_details(sender_receiver_details: SenderReceiverDetails):
-
+    '''
+    Post request for creating sender email and receiver email.
+    '''
     sender_receiver_details_with_id = SenderReceiverDetailswithID(**sender_receiver_details.dict(),id=id_handler.auto_increment())
     db_sender_receiver_details.put(sender_receiver_details_with_id.dict())
     return {"task": "Added successfully", "item": sender_receiver_details_with_id.dict()}
 
 
-
-
-@app.delete("/sender-receiver-details/delete-latest-added-item")
+@app.delete("/sender-receiver-details/delete-latest-added-item",tags=["Sender and Receiver Details"])
 async def delete_sender_receiver_details_latest_added_item():
+    '''
+    Delete the last added sender and receiver mail details.
+    '''
     json = next(db_sender_receiver_details.fetch())
     if not json:
         return {"task":"No Items to Delete"}
-    
 
     latest_dictionary_item = id_handler.last_item()
 
@@ -121,15 +140,15 @@ async def delete_sender_receiver_details_latest_added_item():
     return {"task":f"Deleted Successfully ", "Deleted item":latest_dictionary_item}
 
 
-
-@app.delete("/sender-receiver-details/")
+@app.delete("/sender-receiver-details/",tags=["Sender and Receiver Details"])
 async def delete_sender_receiver_details_all_items():
+    '''
+    Delete all sender and receiver mail details from the database.
+    '''
     json = next(db_sender_receiver_details.fetch())
     if not json:
         return {"task":"No Items to Delete"}
     
-
-
     json_item = next(db_sender_receiver_details.fetch())
 
     for dictionary in json_item:
