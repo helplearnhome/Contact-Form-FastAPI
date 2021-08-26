@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from deta import Deta
 from typing import Optional 
 import send_mail
@@ -28,20 +28,20 @@ app.add_middleware(
 class ContactForm(BaseModel):
     first_name: str=Form(...)
     last_name: str=Form(...)
-    contact_email: str=Form(...)
+    contact_email: EmailStr=Form(...)
     subject: str=Form(...)
     message_body: str=Form(...)
 
 class SenderReceiverDetails(BaseModel):
-    sender_email: Optional[str]=None
+    sender_email: Optional[EmailStr]=None
     sender_password: Optional[str]=None
-    receiver_email: Optional[str]=None
+    receiver_email: Optional[EmailStr]=None
 
 class SenderReceiverDetailswithID(BaseModel):
     id: int
-    sender_email: Optional[str]=None
+    sender_email: Optional[EmailStr]=None
     sender_password: Optional[str]=None
-    receiver_email: Optional[str]=None
+    receiver_email: Optional[EmailStr]=None
 
 @app.get("/")
 async def read_root():
@@ -55,7 +55,7 @@ async def get_contact_form_details():
     return next(db_contact_form.fetch())
 
 @app.get("/contact-form/{contact_email}",tags=["Contact Form"])
-async def get_contact_form_details_by_contact_email_id(contact_email: str):
+async def get_contact_form_details_by_contact_email_id(contact_email: EmailStr):
     '''
     Get messages from contact form by email id.
     '''
@@ -83,7 +83,7 @@ async def post_contact_form_details(contact_form_object: ContactForm):
 
 
 @app.delete("/contact-form-details/",tags=["Contact Form"])
-async def delete_sender_receiver_details(contact_email: Optional[str]=None):
+async def delete_sender_receiver_details(contact_email: Optional[EmailStr]=None):
     '''
     Delete messages by email id.
     If you don't speicify email id. All the messages will be deleted.
