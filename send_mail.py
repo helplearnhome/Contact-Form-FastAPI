@@ -1,5 +1,5 @@
-import smtplib
-from email.message import EmailMessage
+# import smtplib
+# from email.message import EmailMessage
 import os
 import main
 
@@ -31,30 +31,32 @@ class SendEmail:
 
     #this won't work if we redeploy the database with some changes As all the variables would be destroyed and redeclared.
 
-    def send_email(self,first_name,last_name,email_to_contact,subject,message_body): 
+    def send_email(self,first_name,last_name,contact_email,subject,message_body): 
 
         db_sender_receiver_details_json = next(main.db_sender_receiver_details.fetch())
 
 
         self.first_name = first_name
         self.last_name = last_name
-        self.email_to_contact = email_to_contact
+        self.contact_email = contact_email
         self.subject="Contact Form: "+subject
-        self.message_body = f"Name: {first_name} {last_name}\n\nEmail: {email_to_contact} \n\n{message_body}"
+        self.message_body = f"Name: {first_name} {last_name}\n\nEmail: {contact_email} \n\n{message_body}"
 
         if db_sender_receiver_details_json:
             db_sender_receiver_details_last_object = db_sender_receiver_details_json[-1]
-            self.sender_email=db_sender_receiver_details_last_object['sender_email']
-            self.receiver_email=db_sender_receiver_details_last_object['receiver_email']
+            if db_sender_receiver_details_last_object['sender_email']!=None:
+                self.sender_email=db_sender_receiver_details_last_object['sender_email']
+            if db_sender_receiver_details_last_object['receiver_email']!=None:
+                self.receiver_email=db_sender_receiver_details_last_object['receiver_email']
         
 
-        self.msg = EmailMessage()
-        self.msg["From"] = self.sender_email
-        self.msg["To"] = self.receiver_email
-        self.msg['Subject'] = self.subject
-        self.msg.set_content(self.message_body)
+        # self.msg = EmailMessage()
+        # self.msg["From"] = self.sender_email
+        # self.msg["To"] = self.receiver_email
+        # self.msg['Subject'] = self.subject
+        # self.msg.set_content(self.message_body)
 
-        server = smtplib.SMTP_SSL(self.SMTP_GMAIL_SERVER,self.SMTP_GMAIL_PORT)
-        server.login(self.sender_email,self.sender_password)
-        server.send_message(self.msg)
-        server.quit
+        # server = smtplib.SMTP_SSL(self.SMTP_GMAIL_SERVER,self.SMTP_GMAIL_PORT)
+        # server.login(self.sender_email,self.sender_password)
+        # server.send_message(self.msg)
+        # server.quit
