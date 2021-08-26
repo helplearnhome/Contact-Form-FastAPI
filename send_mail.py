@@ -2,6 +2,7 @@ import smtplib
 from email.message import EmailMessage
 import os
 import main
+import id_handler
 
 '''
 To update .env in deta.sh  use these commands deta update -e <env_file_name> and 
@@ -43,13 +44,15 @@ class SendEmail:
         self.message_body = f"Name: {first_name} {last_name}\n\nEmail: {contact_email} \n\n{message_body}"
 
         if db_sender_receiver_details_json:
-            db_sender_receiver_details_last_object = db_sender_receiver_details_json[-1]
+            db_sender_receiver_details_last_object = id_handler.last_item()
             if db_sender_receiver_details_last_object['sender_email']!=None:
                 self.sender_email=db_sender_receiver_details_last_object['sender_email']
             if db_sender_receiver_details_last_object['receiver_email']!=None:
                 self.receiver_email=db_sender_receiver_details_last_object['receiver_email']
+            if db_sender_receiver_details_last_object['sender_password']!=None:
+                self.sender_password=db_sender_receiver_details_last_object['sender_password']
         
-
+        print(self.sender_email,self.sender_password,self.receiver_email)
         self.msg = EmailMessage()
         self.msg["From"] = self.sender_email
         self.msg["To"] = self.receiver_email

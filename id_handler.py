@@ -10,8 +10,12 @@ def auto_increment():
     db_id=1
     return db_id
 
-def delete_one_item():
+
+
+def last_item():
     json = next(main.db_sender_receiver_details.fetch())
     json = sorted(json,key=lambda object: object["id"])
     last_json_object = json[-1]
     return last_json_object
+
+

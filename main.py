@@ -33,8 +33,14 @@ class ContactForm(BaseModel):
     message_body: str=Form(...)
 
 class SenderReceiverDetails(BaseModel):
-    id: Optional[int]=0
     sender_email: Optional[str]=None
+    sender_password: Optional[str]=None
+    receiver_email: Optional[str]=None
+
+class SenderReceiverDetailswithID(BaseModel):
+    id: int
+    sender_email: Optional[str]=None
+    sender_password: Optional[str]=None
     receiver_email: Optional[str]=None
 
 @app.get("/")
@@ -93,9 +99,10 @@ async def get_sender_receiver_details():
 
 @app.post("/sender-receiver-details/")
 async def post_sender_receiver_details(sender_receiver_details: SenderReceiverDetails):
-    sender_receiver_details.id=id_handler.auto_increment()
-    db_sender_receiver_details.put(sender_receiver_details.dict())
-    return {"task": "Added successfully", "item": sender_receiver_details.dict()}
+
+    sender_receiver_details_with_id = SenderReceiverDetailswithID(**sender_receiver_details.dict(),id=id_handler.auto_increment())
+    db_sender_receiver_details.put(sender_receiver_details_with_id.dict())
+    return {"task": "Added successfully", "item": sender_receiver_details_with_id.dict()}
 
 
 
@@ -107,8 +114,25 @@ async def delete_sender_receiver_details_latest_added_item():
         return {"task":"No Items to Delete"}
     
 
-    latest_dictionary_item = id_handler.delete_one_item()
+    latest_dictionary_item = id_handler.last_item()
 
     db_sender_receiver_details.delete(latest_dictionary_item["key"])
 
     return {"task":f"Deleted Successfully ", "Deleted item":latest_dictionary_item}
+
+
+
+@app.delete("/sender-receiver-details/")
+async def delete_sender_receiver_details_all_items():
+    json = next(db_sender_receiver_details.fetch())
+    if not json:
+        return {"task":"No Items to Delete"}
+    
+
+
+    json_item = next(db_sender_receiver_details.fetch())
+
+    for dictionary in json_item:
+        db_sender_receiver_details.delete(dictionary["key"])
+
+    return {"task":"Deleted Successfully "}
